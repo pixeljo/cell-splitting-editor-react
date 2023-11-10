@@ -32,12 +32,25 @@ function App() {
 
   // Event handlers
   const handleAddCell = () => {
+    containerId++;
+    cellId++;
+    setCellLayout((prevLayout) => [
+        ...prevLayout,
+        {
+          containerId: {containerId},
+          containerChild: 
+          {
+            cellId: {cellId},
+            classType: "cell",
+            isClickable: true,
+          }
+        }
     // setCellLayout((prevLayout) => [
     //   ...prevLayout,
     //   <div key={prevLayout.length + 1} className="cell-container">
     //     <div className="cell" onClick={handleSplitCell}></div>
     //   </div>,
-    // ]);
+    ]);
   };
 
   const handleNewLayout = () => {
@@ -61,12 +74,35 @@ function App() {
     // Split cell logic here
   };
 
+  //Support functions
+  // Recursive code is based on the approach in this article:
+  // https://www.freecodecamp.org/news/how-to-use-recursion-in-react/
+  function LayoutCells ({cellTree}) {
+    
+    return (
+      <div key={cellTree.cellId} className={cellTree.classType}
+        onClick={cellTree.isClickable ? ((evt) => handleSplitCell(evt, cellTree.cellId)) : null}
+        draggable={cellTree.isClickable}
+        onDragStart={cellTree.isClickable ? ((evt) => handleDragStart(evt, cellTree.cellId)) : null}
+        onDrop={cellTree.isClickable ? ((evt) => handleDrop(evt, cellTree.cellId)) : null}
+        >{cellTree.cellContent ? (<img src={cellTree.cellContent.imgURL} alt={cellTree.cellContent.imgAlt}/>) : null }
+        {cellTree?.cellChildren?.map((child) => {
+          return(
+            <Cell cellTree={child}/>
+          );
+          }
+        )}
+      </div>
+    );
+  }
+
 
 
 
   return (
     <>
       <div className="editor">
+        <h1>Simple Editor</h1>
         <div className="action-area">
           <button className="btn--add-cell" onClick={handleAddCell}>
             Add Layout cell
@@ -139,12 +175,12 @@ function App() {
           <div className="layout-panel">
             <h2>Splitting Cells</h2>
             <div className="cell-layout-panel">
-              {/* {cellLayout1.map((cellContainer) => (
+              {cellLayout.map((cellContainer) => (
                 <div key={cellContainer.containerId} className="cell-container">
-                  <Cell cellTree={cellContainer.containerChild} />
+                  <LayoutCells cellTree={cellContainer.containerChild} />
                 </div>
                 )
-              )} */}
+              )}
             </div>
 
           </div>
@@ -155,5 +191,29 @@ function App() {
     </>
   )
 }
+
+// Recursive code is based on the approach in this article:
+// https://www.freecodecamp.org/news/how-to-use-recursion-in-react/
+function LayoutCells ({cellTree}) {
+  
+  return (
+    <div key={cellTree.cellId} className={cellTree.classType}
+      onClick={cellTree.isClickable ? ((evt) => handleSplitCell(evt, cellTree.cellId)) : null}
+      draggable={cellTree.isClickable}
+      onDragStart={cellTree.isClickable ? ((evt) => handleDragStart(evt, cellTree.cellId)) : null}
+      onDrop={cellTree.isClickable ? ((evt) => handleDrop(evt, cellTree.cellId)) : null}
+      >{cellTree.cellContent ? (<img src={cellTree.cellContent.imgURL} alt={cellTree.cellContent.imgAlt}/>) : null }
+      {cellTree?.cellChildren?.map((child) => {
+        return(
+          <Cell cellTree={child}/>
+         );
+        }
+      )}
+    </div>
+  );
+}
+
+
+
 
 export default App
