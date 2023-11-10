@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import './App.scss'
 
+let containerId = 0;
+let cellId = 100;
+
 function App() {
   const [imageCells, setImageCells] = useState([
     { id: 1, 
@@ -16,8 +19,6 @@ function App() {
       imgAlt: '' },
     // Add more cells as needed
   ]);
-  let containerId = 0;
-  let cellId = 1;
 
   // State hooks
   const [cellLayout, setCellLayout] = useState([
@@ -32,15 +33,16 @@ function App() {
 
   // Event handlers
   const handleAddCell = () => {
-    containerId++;
-    cellId++;
+    containerId += 1;
+    cellId += 1;
+    
     setCellLayout((prevLayout) => [
         ...prevLayout,
         {
-          containerId: {containerId},
+          containerId: containerId,
           containerChild: 
           {
-            cellId: {cellId},
+            cellId: cellId,
             classType: "cell",
             isClickable: true,
           }
@@ -78,7 +80,8 @@ function App() {
   // Recursive code is based on the approach in this article:
   // https://www.freecodecamp.org/news/how-to-use-recursion-in-react/
   function LayoutCells ({cellTree}) {
-    
+    // console.log("cellTree = ");
+    // console.log(cellTree);
     return (
       <div key={cellTree.cellId} className={cellTree.classType}
         onClick={cellTree.isClickable ? ((evt) => handleSplitCell(evt, cellTree.cellId)) : null}
@@ -194,24 +197,24 @@ function App() {
 
 // Recursive code is based on the approach in this article:
 // https://www.freecodecamp.org/news/how-to-use-recursion-in-react/
-function LayoutCells ({cellTree}) {
+// function LayoutCells ({cellTree}) {
   
-  return (
-    <div key={cellTree.cellId} className={cellTree.classType}
-      onClick={cellTree.isClickable ? ((evt) => handleSplitCell(evt, cellTree.cellId)) : null}
-      draggable={cellTree.isClickable}
-      onDragStart={cellTree.isClickable ? ((evt) => handleDragStart(evt, cellTree.cellId)) : null}
-      onDrop={cellTree.isClickable ? ((evt) => handleDrop(evt, cellTree.cellId)) : null}
-      >{cellTree.cellContent ? (<img src={cellTree.cellContent.imgURL} alt={cellTree.cellContent.imgAlt}/>) : null }
-      {cellTree?.cellChildren?.map((child) => {
-        return(
-          <Cell cellTree={child}/>
-         );
-        }
-      )}
-    </div>
-  );
-}
+//   return (
+//     <div key={cellTree.cellId} className={cellTree.classType}
+//       onClick={cellTree.isClickable ? ((evt) => handleSplitCell(evt, cellTree.cellId)) : null}
+//       draggable={cellTree.isClickable}
+//       onDragStart={cellTree.isClickable ? ((evt) => handleDragStart(evt, cellTree.cellId)) : null}
+//       onDrop={cellTree.isClickable ? ((evt) => handleDrop(evt, cellTree.cellId)) : null}
+//       >{cellTree.cellContent ? (<img src={cellTree.cellContent.imgURL} alt={cellTree.cellContent.imgAlt}/>) : null }
+//       {cellTree?.cellChildren?.map((child) => {
+//         return(
+//           <Cell cellTree={child}/>
+//          );
+//         }
+//       )}
+//     </div>
+//   );
+// }
 
 
 
