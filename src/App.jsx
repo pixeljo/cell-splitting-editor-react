@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import SplitCellSelectMenu from './SplitCellSelectMenu'
+// import SplitCellSelectMenu from './SplitCellSelectMenu'
 import './App.scss'
 
 let containerId = 0;
@@ -23,14 +23,13 @@ function App() {
 
   // State hooks
   const [cellLayout, setCellLayout] = useState([
-    // <div key={1} className="cell-container">
-    //   <div className="cell" onClick={handleSplitCell}></div>
-    // </div>,
-    // Add more initial cells as needed
   ]);
+  // States to manage Load layout select menu
+  const [layouts, setLayouts] = useState(['']);
+  const [selectedLayout, setSelectedLayout] = ('');
+  // State to manage the split cell selected value
+  const [splitCellSelectedValue, setSplitCellSelectedValue] = useState('');
 
-  const [layouts, setLayouts] = useState(["new"]);
-  const [selectedLayout, setSelectedLayout] = ("new");
 
   // Event handlers
   const handleAddCell = () => {
@@ -73,8 +72,15 @@ function App() {
     // Save layout logic here
   };
 
+  // Handler for select change
+  const handleSplitCellSelectChange = (event) => {
+    setSplitCellSelectedValue(event.target.value);
+  };
+
   const handleSplitCell = (cellId) => {
     // Split cell logic here
+    console.log('selected split state = ');
+    console.log({splitCellSelectedValue});
   };
 
   //Support functions
@@ -118,14 +124,14 @@ function App() {
             New Layout
           </button> */}
 
-          <label htmlFor="layout-select">Load:</label>
+          <label htmlFor="layout-select">Load layout:</label>
           <select
             name="load-layouts"
             id="layout-select"
             onChange={loadLayout}
             value={selectedLayout}
           >
-            <option value="">Please choose a layout</option>
+            <option value="new">new</option>
             {layouts.map((layout) => (
               <option key={layout} value={layout}>
                 {layout}
@@ -133,34 +139,20 @@ function App() {
             ))}
           </select>
 
-          <SplitCellSelectMenu />
+          <div>
+            <label htmlFor="selectOption">Split cell into:</label>
+            <select id="selectOption" 
+              value={splitCellSelectedValue} 
+              onChange={handleSplitCellSelectChange}>
+              <option value="rows">rows</option>
+              <option value="cols">cols</option>
+            </select>
 
-          {/* <form id="cell-split-mode">
-            <fieldset>
-              <legend>Cell Split Mode:</legend>
-              <div>
-                <input
-                  type="radio"
-                  id="splitRow"
-                  name="cellSplit"
-                  value="row"
-                  checked
-                />
-                <label htmlFor="splitRow">Into Rows</label>
-
-                <input
-                  type="radio"
-                  id="splitCol"
-                  name="cellSplit"
-                  value="col"
-                />
-                <label htmlFor="splitCol">Into Cols</label>
-              </div>
-            </fieldset>
-          </form> */}
-
+            {/* <p>Selected Option: {selectedValue}</p> */}
+          </div>
 
         </div> {/* end action-area  */}
+
         <div className="edit-area">
           <div className="image-panel">
             <h2>Drag and Drop Images</h2>
