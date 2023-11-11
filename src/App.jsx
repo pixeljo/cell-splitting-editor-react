@@ -7,15 +7,15 @@ let cellIdCount = 100;
 
 function App() {
   const [imageCells, setImageCells] = useState([
-    { id: 1, 
+    { id: 'img100', 
       imgUrl: 'https://media.nga.gov/iiif/a8c923e1-078d-4f94-b1f4-0e303afe2155/full/!740,560/0/default.jpg',
       imgAlt: 'painting by Rothko abstract with shades of yellow and orange'
      },
-    { id: 2, 
+    { id: 'img101', 
       imgUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9OUHCCZD-mGE1nt0-IKYFb39Cu--s2yvYrq-0oyN8WIpd6dRBNjrL7nzAuQGyDwMIo3g&usqp=CAU',
       imgAlt: '' 
     },
-    { id: 3, 
+    { id: 'img103', 
       imgUrl: 'https://miro.medium.com/v2/resize:fit:0/1*OPTDa-ekwUOSpE3QvjZTeg.jpeg',
       imgAlt: '' },
     // Add more cells as needed
@@ -30,10 +30,11 @@ function App() {
         cellId: cellIdCount,
         classType: "cell",
         isClickable: true,
-        cellContent: {
-          imgUrl: 'https://miro.medium.com/v2/resize:fit:0/1*OPTDa-ekwUOSpE3QvjZTeg.jpeg',
-          imgAlt: 'blue painting by Rothko'
-        }
+        cellContent: 'img100',
+        // cellContent: {
+        //   imgUrl: 'https://miro.medium.com/v2/resize:fit:0/1*OPTDa-ekwUOSpE3QvjZTeg.jpeg',
+        //   imgAlt: 'blue painting by Rothko'
+        // }
       }
     }
 
@@ -104,6 +105,24 @@ function App() {
     // Save layout logic here
   };
 
+  function handleDragStart (evt, sourceId) {
+    evt.dataTransfer.effectAllowed = 'move'
+    evt.dataTransfer.setData('text/plain', sourceId.toString());
+  }
+  
+
+  function handleDrop (evt, targetId) {
+    evt.preventDefault();
+    evt.stopPropogation();
+  
+    const sourceId = Number(evt.dataTransfer.getData('text/plain'));
+  
+    // const sourceContent = dataFindContent(sourceId);
+    // const targetContent = dataFindContent(targetId);
+  
+  }
+  
+
   // Handler for select change
   const handleSplitCellSelectChange = (event) => {
     setSplitCellSelectedValue(event.target.value);
@@ -118,25 +137,10 @@ function App() {
     console.log({cellLayout});
 
     const splitState = (splitCellSelectedValue === "cols") ? "cell-cols" : "cell-rows"
-    console.log(splitState);
-    // updateLayout({cellLayout}, id, splitState);
-    // const tempArr = [...{cellLayout}];
-    // const tempLayout = [...cellLayout];
-    // let tempLayout = {cellLayout};
     const tempLayout = JSON.parse(JSON.stringify({cellLayout}));
 
     console.log("tempLayout = ");
     console.log(tempLayout);
-
-    // tempLayout.map((cellContainer) => (
-    //     formatData(cellContainer.containerChild, id, splitState)
-    //   )
-    // )
-    // for (const key of Object.keys(tempLayout)) {
-    //   const value = tempLayout[key];
-    //   console.log("key, value:")
-    //   console.log(`${key}: ${value}`);
-    // }
 
     tempLayout.cellLayout.map((cellContainer) => (
         formatData(cellContainer.containerChild, id, splitState)
@@ -147,22 +151,26 @@ function App() {
     // setCellLayout((currentLayout) => [...currentLayout, JSON.parse(JSON.stringify(tempLayout))]);
     setCellLayout(JSON.parse(JSON.stringify(tempLayout.cellLayout)));
     
-    console.log("tempLayout after formatting = ");
-    console.log(tempLayout);
-
-  //   setCellLayout((tempLayout) => {[...tempLayout, 
-  //     tempLayout.map((cellContainer) => (
-  //       formatData(cellContainer.containerChild, id, splitState)
-  //     )
-  //     )]
-  //  })
-    console.log("current cellLayout after formatting = ");
-    console.log({cellLayout});
-    // console.log("tempLayout = ");
+    // console.log("tempLayout after formatting = ");
     // console.log(tempLayout);
-    // setCellLayout([...tempLayout]);
+
+    // console.log("current cellLayout after formatting = ");
+    // console.log({cellLayout});
 
   };
+
+  const findImage = (id) => {
+    console.log("id = " + id);
+    let newImgUrl = "";
+    {imageCells.map((cell) => {
+      console.log("cell.id = " + cell.id);
+      if(cell.id === id) { 
+        console.log ("match!");
+        return (cell.imgUrl);
+      }
+    }
+  )}
+  }
 
   //Support functions
   // Recursive code is based on the approach in this article:
@@ -172,7 +180,12 @@ function App() {
     console.log(cellTree);
     let cellStyles = null;
     if(cellTree.cellContent) {
-      cellStyles = { backgroundImage: `url(${cellTree.cellContent.imgUrl})`, backgroundColor:'orange'  }
+      const matchingCell = imageCells.find(cell => cell.id === cellTree.cellContent);
+      // const imgUrl = findImage(cellTree.cellContent);
+      const imgUrl = (matchingCell) ? matchingCell.imgUrl : "";
+      console.log("imgUrl = " + imgUrl);
+      // cellStyles = { backgroundImage: `url(${cellTree.cellContent.imgUrl})`, backgroundColor:'orange'  }
+      cellStyles = { backgroundImage: `url(${imgUrl})`, backgroundColor:'orange'  }
     }
     return (
       <div key={cellTree.cellId} className={cellTree.classType}
