@@ -30,6 +30,10 @@ function App() {
         cellId: cellIdCount,
         classType: "cell",
         isClickable: true,
+        cellContent: {
+          imgUrl: 'https://miro.medium.com/v2/resize:fit:0/1*OPTDa-ekwUOSpE3QvjZTeg.jpeg',
+          imgAlt: 'blue painting by Rothko'
+        }
       }
     }
 
@@ -166,13 +170,19 @@ function App() {
   function LayoutCells ({cellTree}) {
     console.log("cellTree = ");
     console.log(cellTree);
+    let cellStyles = null;
+    if(cellTree.cellContent) {
+      cellStyles = { backgroundImage: `url(${cellTree.cellContent.imgUrl})`, backgroundColor:'orange'  }
+    }
     return (
       <div key={cellTree.cellId} className={cellTree.classType}
         onClick={cellTree.isClickable ? ((evt) => handleSplitCell(evt, cellTree.cellId)) : null}
         draggable={cellTree.isClickable}
         onDragStart={cellTree.isClickable ? ((evt) => handleDragStart(evt, cellTree.cellId)) : null}
         onDrop={cellTree.isClickable ? ((evt) => handleDrop(evt, cellTree.cellId)) : null}
-        >{cellTree.cellContent ? (<img src={cellTree.cellContent.imgURL} alt={cellTree.cellContent.imgAlt}/>) : null }
+        style={cellStyles}
+        >
+          {/* {cellTree.cellContent ? (<img src={cellTree.cellContent.imgUrl} alt={cellTree.cellContent.imgAlt}/>) : null } */}
         {cellTree?.cellChildren?.map((child) => {
             return(
               <LayoutCells cellTree={child}/>
