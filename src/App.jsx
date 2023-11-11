@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import SplitCellSelectMenu from './SplitCellSelectMenu'
 import './App.scss'
 
 let containerId = 0;
@@ -131,7 +132,10 @@ function App() {
               </option>
             ))}
           </select>
-          <form id="cell-split-mode">
+
+          <SplitCellSelectMenu />
+
+          {/* <form id="cell-split-mode">
             <fieldset>
               <legend>Cell Split Mode:</legend>
               <div>
@@ -153,7 +157,7 @@ function App() {
                 <label htmlFor="splitCol">Into Cols</label>
               </div>
             </fieldset>
-          </form>
+          </form> */}
 
 
         </div> {/* end action-area  */}
