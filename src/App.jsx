@@ -2,8 +2,8 @@ import { useState } from 'react'
 // import SplitCellSelectMenu from './SplitCellSelectMenu'
 import './App.scss'
 
-let containerId = 0;
-let cellId = 100;
+let containerIdCount = 0;
+let cellIdCount = 100;
 
 function App() {
   const [imageCells, setImageCells] = useState([
@@ -22,36 +22,64 @@ function App() {
   ]);
 
   // State hooks
-  const [cellLayout, setCellLayout] = useState([
+  const [cellLayout, setCellLayout] = useState([ 
+    {
+      containerId: containerIdCount,
+      containerChild: 
+      {
+        cellId: cellIdCount,
+        classType: "cell",
+        isClickable: true,
+      }
+    }
+
   ]);
   // States to manage Load layout select menu
   const [layouts, setLayouts] = useState(['']);
   const [selectedLayout, setSelectedLayout] = ('');
   // State to manage the split cell selected value
-  const [splitCellSelectedValue, setSplitCellSelectedValue] = useState('');
+  const [splitCellSelectedValue, setSplitCellSelectedValue] = useState('rows');
 
 
   // Event handlers
   const handleAddCell = () => {
-    containerId += 1;
-    cellId += 1;
+    containerIdCount += 1;
+    cellIdCount += 1;
+
+    // // let tempCellLayout = [];
+    // const tempCellLayout = structuredClone({cellLayout});
+    // // console.log("type of cellLayout is: ");
+    // // console.log(typeof(cellLayout));
+    // // console.log("type of tempCellLayout is: ");
+    // // console.log(typeof(tempCellLayout));
+    // // console.log("cellLayout = ");
+    // // console.log({cellLayout});
+    // // setCellLayout([]);
+    
+    // tempCellLayout.push(
+    //   {
+    //     containerId: containerId,
+    //     containerChild: 
+    //     {
+    //       cellId: cellId,
+    //       classType: "cell",
+    //       isClickable: true,
+    //     }
+    //   }
+    // );
+    // setCellLayout(structuredClone(tempCellLayout));
     
     setCellLayout((prevLayout) => [
         ...prevLayout,
         {
-          containerId: containerId,
+          containerId: containerIdCount,
           containerChild: 
           {
-            cellId: cellId,
+            cellId: cellIdCount,
             classType: "cell",
             isClickable: true,
           }
         }
-    // setCellLayout((prevLayout) => [
-    //   ...prevLayout,
-    //   <div key={prevLayout.length + 1} className="cell-container">
-    //     <div className="cell" onClick={handleSplitCell}></div>
-    //   </div>,
     ]);
   };
 
@@ -77,18 +105,67 @@ function App() {
     setSplitCellSelectedValue(event.target.value);
   };
 
-  const handleSplitCell = (cellId) => {
+  const handleSplitCell = (evt, id) => {
     // Split cell logic here
     console.log('selected split state = ');
     console.log({splitCellSelectedValue});
+    console.log("id = " + id);
+    console.log("cellLayout = ");
+    console.log({cellLayout});
+
+    const splitState = (splitCellSelectedValue === "cols") ? "cell-cols" : "cell-rows"
+    console.log(splitState);
+    // updateLayout({cellLayout}, id, splitState);
+    // const tempArr = [...{cellLayout}];
+    // const tempLayout = [...cellLayout];
+    // let tempLayout = {cellLayout};
+    const tempLayout = JSON.parse(JSON.stringify({cellLayout}));
+
+    console.log("tempLayout = ");
+    console.log(tempLayout);
+
+    // tempLayout.map((cellContainer) => (
+    //     formatData(cellContainer.containerChild, id, splitState)
+    //   )
+    // )
+    // for (const key of Object.keys(tempLayout)) {
+    //   const value = tempLayout[key];
+    //   console.log("key, value:")
+    //   console.log(`${key}: ${value}`);
+    // }
+
+    tempLayout.cellLayout.map((cellContainer) => (
+        formatData(cellContainer.containerChild, id, splitState)
+      )
+    );
+    
+
+    // setCellLayout((currentLayout) => [...currentLayout, JSON.parse(JSON.stringify(tempLayout))]);
+    setCellLayout(JSON.parse(JSON.stringify(tempLayout.cellLayout)));
+    
+    console.log("tempLayout after formatting = ");
+    console.log(tempLayout);
+
+  //   setCellLayout((tempLayout) => {[...tempLayout, 
+  //     tempLayout.map((cellContainer) => (
+  //       formatData(cellContainer.containerChild, id, splitState)
+  //     )
+  //     )]
+  //  })
+    console.log("current cellLayout after formatting = ");
+    console.log({cellLayout});
+    // console.log("tempLayout = ");
+    // console.log(tempLayout);
+    // setCellLayout([...tempLayout]);
+
   };
 
   //Support functions
   // Recursive code is based on the approach in this article:
   // https://www.freecodecamp.org/news/how-to-use-recursion-in-react/
   function LayoutCells ({cellTree}) {
-    // console.log("cellTree = ");
-    // console.log(cellTree);
+    console.log("cellTree = ");
+    console.log(cellTree);
     return (
       <div key={cellTree.cellId} className={cellTree.classType}
         onClick={cellTree.isClickable ? ((evt) => handleSplitCell(evt, cellTree.cellId)) : null}
@@ -97,16 +174,71 @@ function App() {
         onDrop={cellTree.isClickable ? ((evt) => handleDrop(evt, cellTree.cellId)) : null}
         >{cellTree.cellContent ? (<img src={cellTree.cellContent.imgURL} alt={cellTree.cellContent.imgAlt}/>) : null }
         {cellTree?.cellChildren?.map((child) => {
-          return(
-            <Cell cellTree={child}/>
-          );
+            return(
+              <LayoutCells cellTree={child}/>
+            );
           }
         )}
       </div>
     );
   }
 
+  // If cell with cellId found:
+  // Adds 2 new child cells to current cellId cell,
+  // updates current cellto be non-clickable,
+  // and transfers image from original cell to the 2 new child cells
+  // 
+  function formatData(cellTree, cellId, cellClassType){
+    // console.log("cellTree = ");
+    // console.log(cellTree);
+    console.log("cellId = ");
+    console.log(cellId);
+    if(!cellTree) {return false}
+    console.log("cellTree.cellId = ");
+    console.log(cellTree.cellId);
+    // console.log("cellTree = ");
+    // console.log(cellTree);
+    console.log("before adding children current cellIdCount = " + cellIdCount);
+    cellIdCount += 1;
+    console.log("now current cellIdCount = " + cellIdCount);
+    const childId1 = cellIdCount;
+    cellIdCount += 1;
+    console.log("now current cellIdCount = " + cellIdCount);
+    const childId2 = cellIdCount;
+    const currentContent = (cellTree.cellContent) ? cellTree.cellContent : null;
+    if(cellTree.cellId === cellId) {
+      cellTree.classType = cellClassType;
+      cellTree.isClickable = false;
+      cellTree.cellChildren = [ {
+          cellId: childId1,
+          classType: "cell",
+          isClickable: true,
+          cellContent: currentContent,
+        },
+        {
+          cellId: childId2,
+          classType: "cell",
+          isClickable: true,
+          cellContent: currentContent,
+        }
+      ];
+      console.log("after adding children current cellIdCount = " + cellIdCount);
+      cellTree.cellContent = null;
+      return true;
+    } else {
+      let found = false;
+      {cellTree?.cellChildren?.map((child) => {
+        if(formatData(child, cellId, cellClassType)){found = true}
+        }
+      )}
+      return found;
+      // formatData(cellTree.cellChildren, cellId, cellClassType);
+    }
+  }
 
+  console.log("in app, cellLayout is: ");
+  console.log({cellLayout});
+  
 
 
   return (
