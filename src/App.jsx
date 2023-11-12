@@ -96,14 +96,9 @@ function App() {
       //Retrieve saved layout
       const serializedLayout = localStorage.getItem(loadSelection);
 
-      console.log("retrieved serialized layout = ");
-      console.log(serializedLayout);
-      
-
       if (serializedLayout) {
         try {
           const stateFromLocalStorage = JSON.parse(serializedLayout);
-          // console.log("stateFromLocalStorage ", stateFromLocalStorage);
   
           // Update the existing state with the state from local storage
           // I'm not sure why I have to have the .cellLayout object.
@@ -132,13 +127,8 @@ function App() {
     // const currentCellLayout = {cellLayout}; // do I need to make a deep copy first?
     // const serializedLayout = JSON.stringify(currentCellLayout);
     const serializedLayout = JSON.stringify({cellLayout});
-    
-    console.log("saving current cell layout to local storage with selected value of " + newLayoutName);
     localStorage.setItem(newLayoutName,serializedLayout);
-
     }
-
-
   };
 
   function handleDragStart (evt, sourceId, sourceImgId) {
@@ -150,9 +140,9 @@ function App() {
       sourceId: sourceId,
       sourceImgId: sourceImgId
     }
-
+    // If source is from the image palette, then set it up to be copied.
+    // Otherwise the source is in the cell layout palette, and images will be swapped.
     evt.dataTransfer.effectAllowed = (expression.test(sourceId)) ? 'copy' : 'move'
-    console.log("transfer allowed = " + evt.dataTransfer.effectAllowed);
     evt.dataTransfer.setData('text', JSON.stringify(dragData));
   }
 
@@ -160,9 +150,7 @@ function App() {
     if (evt.preventDefault) {
       evt.preventDefault();
     }
-    // evt.dataTransfer.dropEffect = 'copy';
-    // evt.dataTransfer.dropEffect = currentDragType
-    console.log("in handleDragOver");
+    // console.log("in handleDragOver");
     return false;
   }
   
@@ -171,7 +159,6 @@ function App() {
     evt.preventDefault();
     // evt.stopPropogation();
 
-    console.log("in handleDrop");
     let dragData;
 
     try {
@@ -180,32 +167,15 @@ function App() {
       // If the text data isn't parsable we'll just ignore it.
       return;
     }
-    console.log("targetId = " + targetId);
-    console.log("dragged data = ");
-    console.log(dragData);
-    console.log("transfer allowed = " + evt.dataTransfer.effectAllowed);
+    
     const sourceId = dragData.sourceId;
     const sourceImgId = dragData.sourceImgId;
-    // const sourceId = Number(evt.dataTransfer.getData('text/plain'));
   
-    // if transfer allowed is copy replace image for target cell
+    // if transfer allowed is copy, replace image for target cell
     // otherwise swap images between source and target cells
 
-    const tempLayout = JSON.parse(JSON.stringify({cellLayout}));
-    let sourceCell = null;
-    let targetCell = null;
-    let srcFound = false;
-    let targetFound = false;
-    // tempLayout.cellLayout.forEach((cellContainer) => {
-    //     if (!srcFound) {
-    //       sourceCell = findCell(cellContainer.containerChild, sourceId);
-    //       console.log("returned sourceCell = ");
-    //       console.log(sourceCell);
-    //     }
-
-    //     if (sourceCell) { srcFound = true; }      
-    //   }
-    // );
+    const tempLayout = JSON.parse(JSON.stringify({cellLayout})); //deep copy
+  
     // copy source image to target cell
     tempLayout.cellLayout.forEach((cellContainer) => {
         updateCellContent(cellContainer.containerChild, targetId, sourceImgId);   
@@ -213,7 +183,7 @@ function App() {
     );
 
     if(evt.dataTransfer.effectAllowed === 'move') {
-      //swap images
+      //swap images - replace source image with target image
       tempLayout.cellLayout.forEach((cellContainer) => {
           updateCellContent(cellContainer.containerChild, sourceId, targetImgId);   
         }  
@@ -230,18 +200,9 @@ function App() {
   };
 
   const handleSplitCell = (evt, id) => {
-    // Split cell logic here
-    // console.log('selected split state = ');
-    // console.log({splitCellSelectedValue});
-    // console.log("id = " + id);
-    // console.log("cellLayout = ");
-    // console.log({cellLayout});
 
     const splitState = (splitCellSelectedValue === "cols") ? "cell-cols" : "cell-rows"
     const tempLayout = JSON.parse(JSON.stringify({cellLayout}));
-
-    // console.log("tempLayout = ");
-    // console.log(tempLayout);
 
     let found = false;
     tempLayout.cellLayout.forEach((cellContainer) => {
@@ -249,97 +210,39 @@ function App() {
       }
     );
     
-
-    // setCellLayout((currentLayout) => [...currentLayout, JSON.parse(JSON.stringify(tempLayout))]);
     setCellLayout(JSON.parse(JSON.stringify(tempLayout.cellLayout)));
-    
-    // console.log("tempLayout after formatting = ");
-    // console.log(tempLayout);
-
-    // console.log("current cellLayout after formatting = ");
-    // console.log({cellLayout});
 
   };
 
   function updateCellContent (cellTree, cellId, newContent) {
-    // console.log("in updateCellContent: cellId = " + cellId + " and cellTree = ");
-    // console.log(cellTree);
-    
+
     if(!cellTree) {
-      console.log("end of tree, returning null");
+      // console.log("end of tree, returning null");
       return false;
     }
 
-    console.log("cellTree.cellId = " + cellTree.cellId);
-
     if(cellTree.cellId === cellId) {
-      console.log("cell found, updating content");
       cellTree.cellContent = newContent;
       return (true);
     } else {
       {cellTree?.cellChildren?.forEach((child) => {
-            updateCellContent(child, cellId, newContent);
+          updateCellContent(child, cellId, newContent);
         }
       )}
     }
 
   }
-
-  // returns cell if found
-  function findCell(cellTree, cellId){
-    console.log("in findCell: cellId = " + cellId + " and cellTree = ");
-    console.log(cellTree);
-    let cellFound = false;
-
-    if(!cellTree) {
-      console.log("end of tree, returning null");
-      return null;
-    }
-
-    console.log("cellTree.cellId = " + cellTree.cellId);
-
-    if(cellTree.cellId === cellId) {
-      console.log("cell found, returning cellTree = ");
-      console.log(cellTree);
-      cellFound = true;
-      return (cellTree);
-    } else {
-      {cellTree?.cellChildren?.forEach((child) => {
-          if (!cellFound){
-            findCell(child, cellId);
-          }
-        }
-      )}
-    }
-
-  }
-
-  // const findImage = (id) => {
-  //   console.log("id = " + id);
-  //   let newImgUrl = "";
-  //   {imageCells.map((cell) => {
-  //     console.log("cell.id = " + cell.id);
-  //     if(cell.id === id) { 
-  //       console.log ("match!");
-  //       return (cell.imgUrl);
-  //     }
-  //   }
-  // )}
-  // }
 
   //Support functions
   // Recursive code is based on the approach in this article:
   // https://www.freecodecamp.org/news/how-to-use-recursion-in-react/
   function LayoutCells ({cellTree}) {
-    // console.log("cellTree = ");
-    // console.log(cellTree);
     let cellStyles = null;
     if(cellTree.cellContent) {
+      // Fetch image content from image cells array
       const matchingCell = imageCells.find(cell => cell.id === cellTree.cellContent);
-      // const imgUrl = findImage(cellTree.cellContent);
       const imgUrl = (matchingCell) ? matchingCell.imgUrl : "";
-      // console.log("imgUrl = " + imgUrl);
-      // cellStyles = { backgroundImage: `url(${cellTree.cellContent.imgUrl})`, backgroundColor:'orange'  }
+      // set up image content
       cellStyles = { backgroundImage: `url(${imgUrl})`, backgroundColor:'orange'  }
     }
     return (
@@ -368,15 +271,12 @@ function App() {
   // and transfers image from original cell to the 2 new child cells
   // 
   function formatData(cellTree, cellId, cellClassType){
-    // console.log("cellId = " + cellId);
 
     if(!cellTree) {return false}
-    // console.log("cellTree.cellId = " + cellTree.cellId);
 
     cellIdCount += 1;
     const childId1 = cellIdCount;
     cellIdCount += 1;
-    // console.log("now current cellIdCount = " + cellIdCount);
     const childId2 = cellIdCount;
     const currentContent = (cellTree.cellContent) ? cellTree.cellContent : null;
     if(cellTree.cellId === cellId) {
@@ -408,11 +308,6 @@ function App() {
     }
   }
 
-  // console.log("in app, cellLayout is: ");
-  // console.log({cellLayout});
-  
-
-
   return (
     <>
       <div className="editor">
@@ -424,9 +319,6 @@ function App() {
           <button className="btn--save-layout" onClick={handleSaveLayout}>
             Save Layout
           </button>
-          {/* <button className="btn--new-layout" onClick={handleNewLayout}>
-            New Layout
-          </button> */}
 
           <label htmlFor="layout-select">Load layout:</label>
           <select
@@ -435,7 +327,6 @@ function App() {
             onChange={loadLayout}
             value={selectedLayoutValue}
           >
-            {/* <option value="new">new</option> */}
             {layoutOptions.map((layoutOption) => (
               <option key={layoutOption.value} value={layoutOption.value}>
                 {layoutOption.value}
@@ -444,8 +335,8 @@ function App() {
           </select>
 
           <div>
-            <label htmlFor="selectOption">Split cell into:</label>
-            <select id="selectOption" 
+            <label htmlFor="select-option">Split cell into:</label>
+            <select id="select-option" 
               value={splitCellSelectedValue} 
               onChange={handleSplitCellSelectChange}>
               <option value="rows">rows</option>
@@ -494,10 +385,5 @@ function App() {
     </>
   )
 }
-
-
-
-
-
 
 export default App
