@@ -40,8 +40,12 @@ function App() {
 
   ]);
   // States to manage Load layout select menu
-  const [layouts, setLayouts] = useState(['']);
-  const [selectedLayout, setSelectedLayout] = ('');
+  // const [layouts, setLayouts] = useState(['']);
+  // const [selectedLayout, setSelectedLayout] = ('');
+  const [selectedLayoutValue, setSelectedLayoutValue] = useState('New');
+  const [layoutOptions, setLayoutOptions] = useState([
+    { value: 'New', label: 'New' },
+  ]);
   // State to manage the split cell selected value
   const [splitCellSelectedValue, setSplitCellSelectedValue] = useState('rows');
 
@@ -80,12 +84,61 @@ function App() {
     ]);
   };
 
-  const loadLayout = () => {
+  const loadLayout = (evt) => {
     // Load layout logic here
+
+    const loadSelection = evt.target.value;
+    setSelectedLayoutValue(loadSelection);
+
+    if(loadSelection === "New") {
+      // Clear current layout and set up 4 empty cells
+    } else {
+      //Retrieve saved layout
+      const serializedLayout = localStorage.getItem(loadSelection);
+
+      console.log("retrieved serialized layout = ");
+      console.log(serializedLayout);
+      
+
+      if (serializedLayout) {
+        try {
+          const stateFromLocalStorage = JSON.parse(serializedLayout);
+          // console.log("stateFromLocalStorage ", stateFromLocalStorage);
+  
+          // Update the existing state with the state from local storage
+          // I'm not sure why I have to have the .cellLayout object.
+          // Why can't I do the following?
+          //setCellLayout(stateFromLocalStorage.cellLayout);
+          setCellLayout(stateFromLocalStorage.cellLayout);
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+        }
+      }
+    }
   };
 
   const handleSaveLayout = () => {
     // Save layout logic here
+    const newLayoutName = prompt("Please enter a name for the layout:");
+
+    if (newLayoutName) {
+      // add new name to the Load select menu
+      const newLoadOption = { value: newLayoutName, label: `(${newLayoutName})` };
+      setLayoutOptions([...layoutOptions, newLoadOption]);
+      setSelectedLayoutValue(newLayoutName);
+
+    // Save a copy of the current layout
+
+    // const currentCellLayout = {cellLayout}; // do I need to make a deep copy first?
+    // const serializedLayout = JSON.stringify(currentCellLayout);
+    const serializedLayout = JSON.stringify({cellLayout});
+    
+    console.log("saving current cell layout to local storage with selected value of " + newLayoutName);
+    localStorage.setItem(newLayoutName,serializedLayout);
+
+    }
+
+
   };
 
   function handleDragStart (evt, sourceId, sourceImgId) {
@@ -380,12 +433,12 @@ function App() {
             name="load-layouts"
             id="layout-select"
             onChange={loadLayout}
-            value={selectedLayout}
+            value={selectedLayoutValue}
           >
-            <option value="new">new</option>
-            {layouts.map((layout) => (
-              <option key={layout} value={layout}>
-                {layout}
+            {/* <option value="new">new</option> */}
+            {layoutOptions.map((layoutOption) => (
+              <option key={layoutOption.value} value={layoutOption.value}>
+                {layoutOption.value}
               </option>
             ))}
           </select>
