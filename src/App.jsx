@@ -22,18 +22,45 @@ function App() {
   ]);
 
   // State hooks
+
+  //TODO see if there is a better way to do this
   const [cellLayout, setCellLayout] = useState([ 
     {
-      containerId: containerIdCount,
+      containerId: ++containerIdCount,
       containerChild: 
       {
-        cellId: cellIdCount,
+        cellId: ++cellIdCount,
         classType: "cell",
         isClickable: true,
-        cellContent: 'img100',
+      }
+    },
+    {
+      containerId: ++containerIdCount,
+      containerChild: 
+      {
+        cellId: ++cellIdCount,
+        classType: "cell",
+        isClickable: true,
+      }
+    },
+    {
+      containerId: ++containerIdCount,
+      containerChild: 
+      {
+        cellId: ++cellIdCount,
+        classType: "cell",
+        isClickable: true,
+      }
+    },
+    {
+      containerId: ++containerIdCount,
+      containerChild: 
+      {
+        cellId: ++cellIdCount,
+        classType: "cell",
+        isClickable: true,
       }
     }
-
   ]);
   // States to manage Load layout select menu
   const [selectedLayoutValue, setSelectedLayoutValue] = useState('New');
@@ -49,6 +76,7 @@ function App() {
     containerIdCount += 1;
     cellIdCount += 1;
 
+    // TODO - spread operator/shallow copy could be a problem.
     setCellLayout((prevLayout) => [
         ...prevLayout,
         {
@@ -63,29 +91,32 @@ function App() {
     ]);
   };
 
-  const handleNewLayout = () => {
-    setCellLayout([ 
-      {
-        containerId: containerIdCount,
-        containerChild: 
-        {
-          cellId: ++cellIdCount,
-          classType: "cell",
-          isClickable: true,
-        }
-      }
-  
-    ]);
-  };
-
   const loadLayout = (evt) => {
-    // Load layout logic here
 
     const loadSelection = evt.target.value;
     setSelectedLayoutValue(loadSelection);
 
     if(loadSelection === "New") {
       // Clear current layout and set up 4 empty cells
+      const newLayout=[];
+      // TODO these count numbers seem too high - need to explore
+      // keep logs for now.
+      // console.log("current containerIdCount: ", containerIdCount);
+      // console.log("current cellIdCount: ", cellIdCount);
+      for(let i=0; i<4; i++) {
+        newLayout.push(
+          {
+            containerId: ++containerIdCount,
+            containerChild: 
+            {
+              cellId: ++cellIdCount,
+              classType: "cell",
+              isClickable: true,
+            }
+          }
+        )
+      }
+      setCellLayout(newLayout);
     } else {
       //Retrieve saved layout
       const serializedLayout = localStorage.getItem(loadSelection);
@@ -95,9 +126,9 @@ function App() {
           const stateFromLocalStorage = JSON.parse(serializedLayout);
   
           // Update the existing state with the state from local storage
-          // I'm not sure why I have to have the .cellLayout object.
+          // TODO-learn:I'm not sure why I have to have the .cellLayout object.
           // Why can't I do the following?
-          //setCellLayout(stateFromLocalStorage.cellLayout);
+          //setCellLayout(stateFromLocalStorage);
           setCellLayout(stateFromLocalStorage.cellLayout);
         } catch (error) {
           console.error('Error parsing JSON:', error);
@@ -107,7 +138,7 @@ function App() {
   };
 
   const handleSaveLayout = () => {
-    // Save layout logic here
+
     const newLayoutName = prompt("Please enter a name for the layout:");
 
     if (newLayoutName) {
@@ -118,6 +149,7 @@ function App() {
 
     // Save a copy of the current layout
 
+    // TODO-learn:
     // const currentCellLayout = {cellLayout}; // do I need to make a deep copy first?
     // const serializedLayout = JSON.stringify(currentCellLayout);
     const serializedLayout = JSON.stringify({cellLayout});
@@ -151,7 +183,6 @@ function App() {
 
   function handleDrop (evt, targetId, targetImgId) {
     evt.preventDefault();
-    // evt.stopPropogation();
 
     let dragData;
 
@@ -211,7 +242,6 @@ function App() {
   function updateCellContent (cellTree, cellId, newContent) {
 
     if(!cellTree) {
-      // console.log("end of tree, returning null");
       return false;
     }
 
