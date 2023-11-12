@@ -29,3 +29,9 @@ Bugs/Features
     - doesn't ask user to save current layout before loading a new layout.
     - can't load a new layout if current initial layout hasn't been saved.
 - Can't undo any action
+- Need better signals - cursors, visual cues, when dragging and dropping
+- Accessibility issues:
+    - Can't do drag/drop using keyboard keys
+    - Doesn't have aria attributes for drag and drop
+    - Not tested with a screen reader
+    - not tested for keyboard navigation
