@@ -1,19 +1,80 @@
 $placeholder-color: #bbe4e9;
+$tablet-width: 800px;
+$desktop-width: 1200px;
+h1 {
+    font-weight: 400;
+}
+h2 {
+    font-weight: 300;
+}
+
+@mixin med-bp {
+    @media (min-width: $tablet-width) {
+        @content;
+    }
+}
+
+@mixin large-bp {
+    @media (min-width: $desktop-width) {
+        @content;
+    }
+}
 
 *{box-sizing:border-box;}
 
-.btn--add-cell {
-  margin-bottom: 20px;
+body {
+    justify-content: center;
+    place-items: unset;
 }
 
-#cell-split-mode {
-  margin-bottom: 20px;
-  width: 300px;
+
+
+.editor {
+    padding: 20px;
+    border: solid 2px $placeholder-color;
+}
+
+.action-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+
+    btn {
+        border: solid 2px $placeholder-color;
+    }
+}
+
+.edit-area {
+    border-top: solid 1px $placeholder-color;
+    padding: 20px 0;
+}
+
+.image-panel {
+    padding-right: 20px;
+    width: 200px;
+}
+
+.layout-panel {
+    padding-left: 20px;
+    border-left: solid 1px $placeholder-color;
 }
 
 .cell-layout-panel {
   display: grid;
   grid-gap: 20px;
+  padding-right: 20px;
+  grid-template-columns: 1fr;
+  max-height: 700px;
+  overflow: scroll;
+
+  @include med-bp {
+    grid-template-columns: 1fr 1fr
+  }
+  @include large-bp {
+    grid-template-columns: 1fr 1fr 1fr
+  }
 }
 
 .cell-container {
@@ -21,8 +82,8 @@ $placeholder-color: #bbe4e9;
 //   height: 200px;
     width: calc(100vw - 150px);
     height: calc(100vw - 150px);
-    max-width: 200px;
-    max-height: 200px;
+    max-width: 250px;
+    max-height: 250px;
 }
 
 .cell {

@@ -31,17 +31,11 @@ function App() {
         classType: "cell",
         isClickable: true,
         cellContent: 'img100',
-        // cellContent: {
-        //   imgUrl: 'https://miro.medium.com/v2/resize:fit:0/1*OPTDa-ekwUOSpE3QvjZTeg.jpeg',
-        //   imgAlt: 'blue painting by Rothko'
-        // }
       }
     }
 
   ]);
   // States to manage Load layout select menu
-  // const [layouts, setLayouts] = useState(['']);
-  // const [selectedLayout, setSelectedLayout] = ('');
   const [selectedLayoutValue, setSelectedLayoutValue] = useState('New');
   const [layoutOptions, setLayoutOptions] = useState([
     { value: 'New', label: 'New' },
@@ -311,7 +305,7 @@ function App() {
   return (
     <>
       <div className="editor">
-        <h1>Simple Editor</h1>
+        <h1>Splitting Squares</h1>
         <div className="action-area">
           <button className="btn--add-cell" onClick={handleAddCell}>
             Add Layout cell
@@ -320,21 +314,23 @@ function App() {
             Save Layout
           </button>
 
-          <label htmlFor="layout-select">Load layout:</label>
-          <select
-            name="load-layouts"
-            id="layout-select"
-            onChange={loadLayout}
-            value={selectedLayoutValue}
-          >
-            {layoutOptions.map((layoutOption) => (
-              <option key={layoutOption.value} value={layoutOption.value}>
-                {layoutOption.value}
-              </option>
-            ))}
-          </select>
+          <div className="select-menu">
+            <label htmlFor="layout-select">Load layout:</label>
+            <select
+              name="load-layouts"
+              id="layout-select"
+              onChange={loadLayout}
+              value={selectedLayoutValue}
+            >
+              {layoutOptions.map((layoutOption) => (
+                <option key={layoutOption.value} value={layoutOption.value}>
+                  {layoutOption.value}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <div>
+          <div className="select-menu">
             <label htmlFor="select-option">Split cell into:</label>
             <select id="select-option" 
               value={splitCellSelectedValue} 
@@ -342,15 +338,14 @@ function App() {
               <option value="rows">rows</option>
               <option value="cols">cols</option>
             </select>
-
-            {/* <p>Selected Option: {selectedValue}</p> */}
           </div>
 
         </div> {/* end action-area  */}
 
         <div className="edit-area">
           <div className="image-panel">
-            <h2>Drag and Drop Images</h2>
+            <h2>Image Palette</h2>
+            <p>Drag n drop images</p>
             <div className="image-cells">
               {imageCells.map((cell) => (
                 <div
@@ -367,7 +362,12 @@ function App() {
 
           </div>
           <div className="layout-panel">
-            <h2>Splitting Cells</h2>
+            <h2>Cell Layout</h2>
+            <p> Cell split mode: {splitCellSelectedValue}</p>
+            <p>
+              Images can be swapped between cells <br></br>
+              Cells can be split into columns or rows
+            </p>
             <div className="cell-layout-panel">
               {cellLayout.map((cellContainer) => (
                 <div key={cellContainer.containerId} className="cell-container">
