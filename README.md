@@ -35,3 +35,5 @@ Bugs/Features
     - Doesn't have aria attributes for drag and drop
     - Not tested with a screen reader
     - not tested for keyboard navigation
+    - User cannot navigate via keyboard to Image cells and layout cells - tabgroup/indexes need to be set up
+    - Role for image cell is currently image, but it is also draggable.

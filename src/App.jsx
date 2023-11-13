@@ -33,7 +33,7 @@ function App() {
 
   // State hooks
 
-  //TODO see if there is a better way to do this
+  //TODO see if there is a better way to do this - e.g. less code inside a loop.
   const [cellLayout, setCellLayout] = useState([ 
     {
       containerId: ++containerIdCount,
@@ -408,7 +408,11 @@ function App() {
                   onDragStart={(e) => handleDragStart(e, cell.id, cell.id)}
                   onDragEnd={(e) => handleDragEnd(e)}
                   draggable
-                ><img src={cell.imgUrl} alt={cell.imgAlt}/></div>
+                  aria-role="img"
+                  aria-label={cell.imgAlt}
+                  style= {{backgroundImage: `url(${cell.imgUrl})`, backgroundColor:'orange' }}
+                ></div>
+                // ><img src={cell.imgUrl} alt={cell.imgAlt}/></div>
               ))}
             </div>
 
