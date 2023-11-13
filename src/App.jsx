@@ -73,9 +73,9 @@ function App() {
     }
   ]);
   // States to manage Load layout select menu
-  const [selectedLayoutValue, setSelectedLayoutValue] = useState('New');
+  const [selectedLayoutValue, setSelectedLayoutValue] = useState('new');
   const [layoutOptions, setLayoutOptions] = useState([
-    { value: 'New', label: 'New' },
+    { value: 'new', label: 'new' },
   ]);
   // State to manage the split cell selected value
   const [splitCellSelectedValue, setSplitCellSelectedValue] = useState('rows');
@@ -359,13 +359,13 @@ function App() {
   return (
     <>
       <div className="editor">
-        <h1>Splitting Squares</h1>
+        <h1>Splitting squares</h1>
         <div className="action-area">
           <button className="btn--add-cell" onClick={handleAddCell}>
-            Add Layout cell
+            Add layout cell
           </button>
           <button className="btn--save-layout" onClick={handleSaveLayout}>
-            Save Layout
+            Save layout
           </button>
 
           <div className="select-menu">
@@ -398,7 +398,7 @@ function App() {
 
         <div className="edit-area">
           <div className="image-panel">
-            <h2>Image Palette</h2>
+            <h2>Image palette</h2>
             <p>Drag n drop images</p>
             <div className="image-cells">
               {imageCells.map((cell) => (
@@ -418,7 +418,7 @@ function App() {
 
           </div>
           <div className="layout-panel">
-            <h2>Cell Layout</h2>
+            <h2>Cell layout</h2>
             <p> Cell split mode: {splitCellSelectedValue}</p>
             <p>
               Images can be swapped between cells <br></br>
