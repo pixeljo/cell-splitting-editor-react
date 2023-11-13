@@ -1,11 +1,21 @@
 import { useState } from 'react'
-// import SplitCellSelectMenu from './SplitCellSelectMenu'
 import './App.scss'
 
 let containerIdCount = 0;
 let cellIdCount = 100;
 
+// TODO: is there any way to break down any of these components into
+// a separate component that can be imported here.  They all seem to be 
+// inter-related?  Maybe this can be organized better, so that we can
+// have more modular, stand-alone components
+
 function App() {
+  // State hooks
+
+  //TODO - don't think we need a state hook for this.
+  // but it might be worth keeping it as a state, if we want to
+  // add a feature that allows the user to dynamically upload
+  // images to the image panel.
   const [imageCells, setImageCells] = useState([
     { id: 'img100', 
       imgUrl: 'https://media.nga.gov/iiif/a8c923e1-078d-4f94-b1f4-0e303afe2155/full/!740,560/0/default.jpg',
@@ -76,7 +86,7 @@ function App() {
     containerIdCount += 1;
     cellIdCount += 1;
 
-    // TODO - spread operator/shallow copy could be a problem.
+    // TODO - spread operator/shallow copy could be a problem?
     setCellLayout((prevLayout) => [
         ...prevLayout,
         {
@@ -147,11 +157,9 @@ function App() {
       setLayoutOptions([...layoutOptions, newLoadOption]);
       setSelectedLayoutValue(newLayoutName);
 
-    // Save a copy of the current layout
-
     // TODO-learn:
     // const currentCellLayout = {cellLayout}; // do I need to make a deep copy first?
-    // const serializedLayout = JSON.stringify(currentCellLayout);
+    // const serializedLayout = JSON.stringify(currentCellLayout); // do I need 2 steps?
     const serializedLayout = JSON.stringify({cellLayout});
     localStorage.setItem(newLayoutName,serializedLayout);
     }
@@ -170,6 +178,8 @@ function App() {
     // Otherwise the source is in the cell layout palette, and images will be swapped.
     evt.dataTransfer.effectAllowed = (expression.test(sourceId)) ? 'copy' : 'move'
     evt.dataTransfer.setData('text', JSON.stringify(dragData));
+
+    evt.target.classList.add('fade');
   }
 
   function handleDragOver (evt) {
@@ -178,6 +188,18 @@ function App() {
     }
     // console.log("in handleDragOver");
     return false;
+  }
+
+  function handleDragEnter (evt) {
+    evt.target.classList.add('over');
+  }
+
+  function handleDragLeave (evt) {
+    evt.target.classList.remove('over');
+  }
+
+  function handleDragEnd (evt) {
+    evt.target.classList.remove('fade');
   }
   
 
@@ -275,6 +297,8 @@ function App() {
         draggable={cellTree.isClickable}
         onDragStart={cellTree.isClickable ? ((evt) => handleDragStart(evt, cellTree.cellId, cellTree.cellContent)) : null}
         onDragOver={cellTree.isClickable ? ((evt) => handleDragOver(evt)) : null}
+        onDragEnter={cellTree.isClickable ? ((evt) => handleDragEnter(evt)) : null}
+        onDragLeave={cellTree.isClickable ? ((evt) => handleDragLeave(evt)) : null}
         onDrop={cellTree.isClickable ? ((evt) => handleDrop(evt, cellTree.cellId, cellTree.cellContent)) : null}
         style={cellStyles}
         >
@@ -382,10 +406,8 @@ function App() {
                   key={cell.id}
                   className="image-cell" // Add your CSS class for image cells here
                   onDragStart={(e) => handleDragStart(e, cell.id, cell.id)}
-                  // onDragOver={(e) => handleDragOver(e, cell.id)}
-                  // onDrop={(e) => handleDrop(e, cell.id)}
+                  onDragEnd={(e) => handleDragEnd(e)}
                   draggable
-                  data-drag-type='copy'
                 ><img src={cell.imgUrl} alt={cell.imgAlt}/></div>
               ))}
             </div>

@@ -101,6 +101,15 @@ body {
     object-fit: cover;
     object-position: center top;
   }
+
+  &.over {
+    border: 3px dotted #666;
+  }
+
+  &.fade {
+    opacity: 0.5;
+    cursor: move;
+  }
 }
 
 .cell-rows {
@@ -139,6 +148,10 @@ body {
     margin: 5px;
     // background-size: 'cover';
     cursor: grab;
+
+    &.fade {
+        opacity: 0.5;
+    }
 
     img {
         width: 100%;
