@@ -1,4 +1,6 @@
 $placeholder-color: #bbe4e9;
+$border-color: orange;
+$border-color-active: #646cff;
 $tablet-width: 800px;
 $desktop-width: 1200px;
 h1 {
@@ -40,6 +42,23 @@ body {
     gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 20px;
+
+    button {
+        font-weight: 400;
+        border-radius: 0;
+        border: solid 2px $border-color;
+        &:focus {
+            border-radius: 0;
+        }
+    }
+
+    label {
+        margin-right: 2px;
+    }
+
+    select {
+        border: solid 2px $border-color;
+    }
 }
 
 .edit-area {
