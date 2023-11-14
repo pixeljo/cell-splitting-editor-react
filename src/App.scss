@@ -3,9 +3,11 @@ $border-color: orange;
 $border-color-active: #646cff;
 $tablet-width: 800px;
 $desktop-width: 1200px;
+
 h1 {
     font-weight: 400;
 }
+
 h2 {
     font-weight: 300;
 }
@@ -22,7 +24,9 @@ h2 {
     }
 }
 
-*{box-sizing:border-box;}
+* {
+    box-sizing: border-box;
+}
 
 body {
     justify-content: center;
@@ -48,6 +52,7 @@ body {
         border-radius: 0;
         border: solid 2px $border-color;
         padding: 5px;
+
         &:focus {
             border-radius: 0;
         }
@@ -61,6 +66,7 @@ body {
         border: solid 2px $border-color;
         padding: 5px;
         cursor: pointer;
+
         &:hover {
             border-color: $border-color-active;
         }
@@ -83,24 +89,25 @@ body {
 }
 
 .cell-layout-panel {
-  display: grid;
-  grid-gap: 20px;
-  padding-right: 20px;
-  grid-template-columns: 1fr;
-  max-height: 700px;
-  overflow: scroll;
+    display: grid;
+    grid-gap: 20px;
+    padding-right: 20px;
+    grid-template-columns: 1fr;
+    max-height: 700px;
+    overflow: scroll;
 
-  @include med-bp {
-    grid-template-columns: 1fr 1fr
-  }
-  @include large-bp {
-    grid-template-columns: 1fr 1fr 1fr
-  }
+    @include med-bp {
+        grid-template-columns: 1fr 1fr
+    }
+
+    @include large-bp {
+        grid-template-columns: 1fr 1fr 1fr
+    }
 }
 
 .cell-container {
-//   width: 200px;
-//   height: 200px;
+    //   width: 200px;
+    //   height: 200px;
     width: calc(100vw - 150px);
     height: calc(100vw - 150px);
     max-width: 250px;
@@ -108,41 +115,45 @@ body {
 }
 
 .cell {
-  background-color: rgba($placeholder-color, 0.3);
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  cursor: pointer;
-  background-size: cover;
-  background-position: center top;
+    background-color: rgba($placeholder-color, 0.3);
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center top;
 
-  &.over {
-    border: 3px dotted #666;
-  }
+    &.over {
+        border: 3px dotted #666;
+    }
 
-  &.fade {
-    opacity: 0.5;
-  }
+    &.fade {
+        opacity: 0.5;
+    }
+
+    &:focus {
+        outline: 4px auto -webkit-focus-ring-color;
+    }
 }
 
 .cell-rows {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  grid-gap: 2px;
-  background-color: white;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-gap: 2px;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 .cell-cols {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 2px;
-  background-color: white;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2px;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 .edit-area {
@@ -164,7 +175,11 @@ body {
     background-position: center top;
 
     &.fade {
-        opacity: 0.5;    
+        opacity: 0.5;
+    }
+
+    &:focus {
+        outline: 4px auto -webkit-focus-ring-color;
     }
 
 }
