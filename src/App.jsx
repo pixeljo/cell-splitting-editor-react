@@ -17,27 +17,31 @@ function App() {
   // add a feature that allows the user to dynamically upload
   // images to the image panel.
   const [imageCells, setImageCells] = useState([
-    { id: 'img100', 
+    {
+      id: 'img100',
       imgUrl: 'https://media.nga.gov/iiif/a8c923e1-078d-4f94-b1f4-0e303afe2155/full/!740,560/0/default.jpg',
       imgAlt: 'painting by Rothko abstract with shades of yellow and orange'
-     },
-    { id: 'img101', 
-      imgUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9OUHCCZD-mGE1nt0-IKYFb39Cu--s2yvYrq-0oyN8WIpd6dRBNjrL7nzAuQGyDwMIo3g&usqp=CAU',
-      imgAlt: '' 
     },
-    { id: 'img103', 
+    {
+      id: 'img101',
+      imgUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9OUHCCZD-mGE1nt0-IKYFb39Cu--s2yvYrq-0oyN8WIpd6dRBNjrL7nzAuQGyDwMIo3g&usqp=CAU',
+      imgAlt: ''
+    },
+    {
+      id: 'img103',
       imgUrl: 'https://miro.medium.com/v2/resize:fit:0/1*OPTDa-ekwUOSpE3QvjZTeg.jpeg',
-      imgAlt: '' },
+      imgAlt: ''
+    },
     // Add more cells as needed
   ]);
 
   // State hooks
 
   //TODO see if there is a better way to do this - e.g. less code inside a loop.
-  const [cellLayout, setCellLayout] = useState([ 
+  const [cellLayout, setCellLayout] = useState([
     {
       containerId: ++containerIdCount,
-      containerChild: 
+      containerChild:
       {
         cellId: ++cellIdCount,
         classType: "cell",
@@ -46,7 +50,7 @@ function App() {
     },
     {
       containerId: ++containerIdCount,
-      containerChild: 
+      containerChild:
       {
         cellId: ++cellIdCount,
         classType: "cell",
@@ -55,7 +59,7 @@ function App() {
     },
     {
       containerId: ++containerIdCount,
-      containerChild: 
+      containerChild:
       {
         cellId: ++cellIdCount,
         classType: "cell",
@@ -64,7 +68,7 @@ function App() {
     },
     {
       containerId: ++containerIdCount,
-      containerChild: 
+      containerChild:
       {
         cellId: ++cellIdCount,
         classType: "cell",
@@ -88,16 +92,16 @@ function App() {
 
     // TODO - spread operator/shallow copy could be a problem?
     setCellLayout((prevLayout) => [
-        ...prevLayout,
+      ...prevLayout,
+      {
+        containerId: containerIdCount,
+        containerChild:
         {
-          containerId: containerIdCount,
-          containerChild: 
-          {
-            cellId: cellIdCount,
-            classType: "cell",
-            isClickable: true,
-          }
+          cellId: cellIdCount,
+          classType: "cell",
+          isClickable: true,
         }
+      }
     ]);
   };
 
@@ -106,18 +110,18 @@ function App() {
     const loadSelection = evt.target.value;
     setSelectedLayoutValue(loadSelection);
 
-    if(loadSelection === "New") {
+    if (loadSelection === "new") {
       // Clear current layout and set up 4 empty cells
-      const newLayout=[];
+      const newLayout = [];
       // TODO these count numbers seem too high - need to explore
       // keep logs for now.
       // console.log("current containerIdCount: ", containerIdCount);
       // console.log("current cellIdCount: ", cellIdCount);
-      for(let i=0; i<4; i++) {
+      for (let i = 0; i < 4; i++) {
         newLayout.push(
           {
             containerId: ++containerIdCount,
-            containerChild: 
+            containerChild:
             {
               cellId: ++cellIdCount,
               classType: "cell",
@@ -134,7 +138,7 @@ function App() {
       if (serializedLayout) {
         try {
           const stateFromLocalStorage = JSON.parse(serializedLayout);
-  
+
           // Update the existing state with the state from local storage
           // TODO-learn:I'm not sure why I have to have the .cellLayout object.
           // Why can't I do the following?
@@ -157,15 +161,15 @@ function App() {
       setLayoutOptions([...layoutOptions, newLoadOption]);
       setSelectedLayoutValue(newLayoutName);
 
-    // TODO-learn:
-    // const currentCellLayout = {cellLayout}; // do I need to make a deep copy first?
-    // const serializedLayout = JSON.stringify(currentCellLayout); // do I need 2 steps?
-    const serializedLayout = JSON.stringify({cellLayout});
-    localStorage.setItem(newLayoutName,serializedLayout);
+      // TODO-learn:
+      // const currentCellLayout = {cellLayout}; // do I need to make a deep copy first?
+      // const serializedLayout = JSON.stringify(currentCellLayout); // do I need 2 steps?
+      const serializedLayout = JSON.stringify({ cellLayout });
+      localStorage.setItem(newLayoutName, serializedLayout);
     }
   };
 
-  function handleDragStart (evt, sourceId, sourceImgId) {
+  function handleDragStart(evt, sourceId, sourceImgId) {
     // If source is an image from the image panel then set it up
     // to be copied, otherwise we'll swap images between the target 
     // and the source
@@ -182,7 +186,7 @@ function App() {
     evt.target.classList.add('fade');
   }
 
-  function handleDragOver (evt) {
+  function handleDragOver(evt) {
     if (evt.preventDefault) {
       evt.preventDefault();
     }
@@ -190,20 +194,20 @@ function App() {
     return false;
   }
 
-  function handleDragEnter (evt) {
+  function handleDragEnter(evt) {
     evt.target.classList.add('over');
   }
 
-  function handleDragLeave (evt) {
+  function handleDragLeave(evt) {
     evt.target.classList.remove('over');
   }
 
-  function handleDragEnd (evt) {
+  function handleDragEnd(evt) {
     evt.target.classList.remove('fade');
   }
-  
 
-  function handleDrop (evt, targetId, targetImgId) {
+
+  function handleDrop(evt, targetId, targetImgId) {
     evt.preventDefault();
 
     let dragData;
@@ -214,32 +218,32 @@ function App() {
       // If the text data isn't parsable we'll just ignore it.
       return;
     }
-    
+
     const sourceId = dragData.sourceId;
     const sourceImgId = dragData.sourceImgId;
-  
+
     // if transfer allowed is copy, replace image for target cell
     // otherwise swap images between source and target cells
 
-    const tempLayout = JSON.parse(JSON.stringify({cellLayout})); //deep copy
-  
+    const tempLayout = JSON.parse(JSON.stringify({ cellLayout })); //deep copy
+
     // copy source image to target cell
     tempLayout.cellLayout.forEach((cellContainer) => {
-        updateCellContent(cellContainer.containerChild, targetId, sourceImgId);   
-      }  
+      updateCellContent(cellContainer.containerChild, targetId, sourceImgId);
+    }
     );
 
-    if(evt.dataTransfer.effectAllowed === 'move') {
+    if (evt.dataTransfer.effectAllowed === 'move') {
       //swap images - replace source image with target image
       tempLayout.cellLayout.forEach((cellContainer) => {
-          updateCellContent(cellContainer.containerChild, sourceId, targetImgId);   
-        }  
+        updateCellContent(cellContainer.containerChild, sourceId, targetImgId);
+      }
       );
     }
 
     setCellLayout(JSON.parse(JSON.stringify(tempLayout.cellLayout)));
   }
-  
+
 
   // Handler for select change
   const handleSplitCellSelectChange = (event) => {
@@ -249,32 +253,34 @@ function App() {
   const handleSplitCell = (evt, id) => {
 
     const splitState = (splitCellSelectedValue === "cols") ? "cell-cols" : "cell-rows"
-    const tempLayout = JSON.parse(JSON.stringify({cellLayout}));
+    const tempLayout = JSON.parse(JSON.stringify({ cellLayout }));
 
     let found = false;
     tempLayout.cellLayout.forEach((cellContainer) => {
-        if (formatData(cellContainer.containerChild, id, splitState)) {found = true;}
-      }
+      if (formatData(cellContainer.containerChild, id, splitState)) { found = true; }
+    }
     );
-    
+
     setCellLayout(JSON.parse(JSON.stringify(tempLayout.cellLayout)));
 
   };
 
-  function updateCellContent (cellTree, cellId, newContent) {
+  function updateCellContent(cellTree, cellId, newContent) {
 
-    if(!cellTree) {
+    if (!cellTree) {
       return false;
     }
 
-    if(cellTree.cellId === cellId) {
+    if (cellTree.cellId === cellId) {
       cellTree.cellContent = newContent;
       return (true);
     } else {
-      {cellTree?.cellChildren?.forEach((child) => {
+      {
+        cellTree?.cellChildren?.forEach((child) => {
           updateCellContent(child, cellId, newContent);
         }
-      )}
+        )
+      }
     }
 
   }
@@ -282,14 +288,14 @@ function App() {
   //Support functions
   // Recursive code is based on the approach in this article:
   // https://www.freecodecamp.org/news/how-to-use-recursion-in-react/
-  function LayoutCells ({cellTree}) {
+  function LayoutCells({ cellTree }) {
     let cellStyles = null;
-    if(cellTree.cellContent) {
+    if (cellTree.cellContent) {
       // Fetch image content from image cells array
       const matchingCell = imageCells.find(cell => cell.id === cellTree.cellContent);
       const imgUrl = (matchingCell) ? matchingCell.imgUrl : "";
       // set up image content
-      cellStyles = { backgroundImage: `url(${imgUrl})`, backgroundColor:'orange'  }
+      cellStyles = { backgroundImage: `url(${imgUrl})`, backgroundColor: 'orange' }
     }
     return (
       <div key={cellTree.cellId} className={cellTree.classType}
@@ -301,13 +307,13 @@ function App() {
         onDragLeave={cellTree.isClickable ? ((evt) => handleDragLeave(evt)) : null}
         onDrop={cellTree.isClickable ? ((evt) => handleDrop(evt, cellTree.cellId, cellTree.cellContent)) : null}
         style={cellStyles}
-        >
-          {/* {cellTree.cellContent ? (<img src={cellTree.cellContent.imgUrl} alt={cellTree.cellContent.imgAlt}/>) : null } */}
+      >
+        {/* {cellTree.cellContent ? (<img src={cellTree.cellContent.imgUrl} alt={cellTree.cellContent.imgAlt}/>) : null } */}
         {cellTree?.cellChildren?.map((child) => {
-            return(
-              <LayoutCells cellTree={child}/>
-            );
-          }
+          return (
+            <LayoutCells cellTree={child} />
+          );
+        }
         )}
       </div>
     );
@@ -318,40 +324,42 @@ function App() {
   // updates current cellto be non-clickable,
   // and transfers image from original cell to the 2 new child cells
   // 
-  function formatData(cellTree, cellId, cellClassType){
+  function formatData(cellTree, cellId, cellClassType) {
 
-    if(!cellTree) {return false}
+    if (!cellTree) { return false }
 
     cellIdCount += 1;
     const childId1 = cellIdCount;
     cellIdCount += 1;
     const childId2 = cellIdCount;
     const currentContent = (cellTree.cellContent) ? cellTree.cellContent : null;
-    if(cellTree.cellId === cellId) {
+    if (cellTree.cellId === cellId) {
       cellTree.classType = cellClassType;
       cellTree.isClickable = false;
-      cellTree.cellChildren = [ {
-          cellId: childId1,
-          classType: "cell",
-          isClickable: true,
-          cellContent: currentContent,
-        },
-        {
-          cellId: childId2,
-          classType: "cell",
-          isClickable: true,
-          cellContent: currentContent,
-        }
+      cellTree.cellChildren = [{
+        cellId: childId1,
+        classType: "cell",
+        isClickable: true,
+        cellContent: currentContent,
+      },
+      {
+        cellId: childId2,
+        classType: "cell",
+        isClickable: true,
+        cellContent: currentContent,
+      }
       ];
       // console.log("after adding children current cellIdCount = " + cellIdCount);
       cellTree.cellContent = null;
       return true;
     } else {
       let found = false;
-      {cellTree?.cellChildren?.map((child) => {
-        if(formatData(child, cellId, cellClassType)){found = true}
+      {
+        cellTree?.cellChildren?.map((child) => {
+          if (formatData(child, cellId, cellClassType)) { found = true }
         }
-      )}
+        )
+      }
       return found;
     }
   }
@@ -386,8 +394,8 @@ function App() {
 
           <div className="select-menu">
             <label htmlFor="select-option">Split cell into:</label>
-            <select id="select-option" 
-              value={splitCellSelectedValue} 
+            <select id="select-option"
+              value={splitCellSelectedValue}
               onChange={handleSplitCellSelectChange}>
               <option value="rows">rows</option>
               <option value="cols">cols</option>
@@ -410,7 +418,7 @@ function App() {
                   draggable
                   aria-role="img"
                   aria-label={cell.imgAlt}
-                  style= {{backgroundImage: `url(${cell.imgUrl})`, backgroundColor:'orange' }}
+                  style={{ backgroundImage: `url(${cell.imgUrl})`, backgroundColor: 'orange' }}
                 ></div>
                 // ><img src={cell.imgUrl} alt={cell.imgAlt}/></div>
               ))}
@@ -429,15 +437,15 @@ function App() {
                 <div key={cellContainer.containerId} className="cell-container">
                   <LayoutCells cellTree={cellContainer.containerChild} />
                 </div>
-                )
+              )
               )}
             </div>
 
           </div>
         </div>
-        
+
       </div>
-      
+
     </>
   )
 }
