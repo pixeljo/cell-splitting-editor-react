@@ -189,7 +189,6 @@ function App() {
     // If source is an image from the image panel then set it up
     // to be copied, otherwise we'll swap images between the target 
     // and the source
-    console.log("in drag start");
     const expression = /^img/;
     const dragData = {
       sourceId: sourceId,
