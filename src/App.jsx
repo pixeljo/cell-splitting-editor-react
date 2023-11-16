@@ -38,6 +38,7 @@ function App() {
   // State hooks
 
   //TODO see if there is a better way to do this - e.g. less code inside a loop.
+  // State to maintian the cells in the Cell layout panel
   const [cellLayout, setCellLayout] = useState([
     {
       containerId: ++containerIdCount,
@@ -84,8 +85,11 @@ function App() {
   // State to manage the split cell selected value
   const [splitCellSelectedValue, setSplitCellSelectedValue] = useState('rows');
 
-
+  //
   // Event handlers
+  //
+  // handleAddCell
+  // Adds new Container cell to the cell layout panel
   const handleAddCell = () => {
     containerIdCount += 1;
     cellIdCount += 1;
@@ -105,6 +109,10 @@ function App() {
     ]);
   };
 
+  //
+  // loadLayout
+  // Updates the cell panel to contain the layout selected from
+  // the load select menu.
   const loadLayout = (evt) => {
 
     const loadSelection = evt.target.value;
@@ -151,8 +159,12 @@ function App() {
     }
   };
 
+  //
+  // handleSaveLayout
+  // Prompts the user for a name to save the layout to
+  // Saves current cell layout to local storage
+  //
   const handleSaveLayout = () => {
-
     const newLayoutName = prompt("Please enter a name for the layout:");
 
     if (newLayoutName) {
@@ -168,6 +180,10 @@ function App() {
       localStorage.setItem(newLayoutName, serializedLayout);
     }
   };
+
+  //
+  //Drag and drop event handlers
+  //
 
   function handleDragStart(evt, sourceId, sourceImgId) {
     // If source is an image from the image panel then set it up
@@ -190,7 +206,6 @@ function App() {
     if (evt.preventDefault) {
       evt.preventDefault();
     }
-    // console.log("in handleDragOver");
     return false;
   }
 
@@ -245,7 +260,9 @@ function App() {
   }
 
 
-  // Handler for select change
+  // 
+  // handleSplitCellSelectChange
+  // 
   const handleSplitCellSelectChange = (event) => {
     setSplitCellSelectedValue(event.target.value);
   };
@@ -265,6 +282,19 @@ function App() {
 
   };
 
+  //
+  //Support functions
+  //
+
+  //
+  //updateCellContent
+  // Recursively search a binary tree, cellTree for cellId.
+  // If found update the cell content to newContent
+  // Inputs:
+  // cellTree - an object containing all of the cells (nested binary tree)within a cell container
+  // cellId - the id number of the cell we are searching for.
+  // newContent - the id number of the image to be placed in the found cell.
+  // returns boolean - true if cell found, false otherwise
   function updateCellContent(cellTree, cellId, newContent) {
 
     if (!cellTree) {
@@ -285,44 +315,17 @@ function App() {
 
   }
 
-  //Support functions
-  // Recursive code is based on the approach in this article:
-  // https://www.freecodecamp.org/news/how-to-use-recursion-in-react/
-  function LayoutCells({ cellTree }) {
-    let cellStyles = null;
-    if (cellTree.cellContent) {
-      // Fetch image content from image cells array
-      const matchingCell = imageCells.find(cell => cell.id === cellTree.cellContent);
-      const imgUrl = (matchingCell) ? matchingCell.imgUrl : "";
-      // set up image content
-      cellStyles = { backgroundImage: `url(${imgUrl})`, backgroundColor: 'orange' }
-    }
-    return (
-      <div key={cellTree.cellId} className={cellTree.classType}
-        onClick={cellTree.isClickable ? ((evt) => handleSplitCell(evt, cellTree.cellId)) : null}
-        draggable={cellTree.isClickable}
-        onDragStart={cellTree.isClickable ? ((evt) => handleDragStart(evt, cellTree.cellId, cellTree.cellContent)) : null}
-        onDragOver={cellTree.isClickable ? ((evt) => handleDragOver(evt)) : null}
-        onDragEnter={cellTree.isClickable ? ((evt) => handleDragEnter(evt)) : null}
-        onDragLeave={cellTree.isClickable ? ((evt) => handleDragLeave(evt)) : null}
-        onDrop={cellTree.isClickable ? ((evt) => handleDrop(evt, cellTree.cellId, cellTree.cellContent)) : null}
-        style={cellStyles}
-      >
-        {/* {cellTree.cellContent ? (<img src={cellTree.cellContent.imgUrl} alt={cellTree.cellContent.imgAlt}/>) : null } */}
-        {cellTree?.cellChildren?.map((child) => {
-          return (
-            <LayoutCells cellTree={child} />
-          );
-        }
-        )}
-      </div>
-    );
-  }
-
+  //
+  // formatData - used for cell-splitting functionality
   // If cell with cellId found:
   // Adds 2 new child cells to current cellId cell,
-  // updates current cellto be non-clickable,
+  // updates current cell to be non-clickable,
   // and transfers image from original cell to the 2 new child cells
+  // Inputs
+  // cellTree - an object containing all of the cells (nested binary tree)within a cell container
+  // cellId - the id number of the cell we are searching for.
+  // cellClassType - the class name ('cell-cols' or 'cell-rows') for the cellId which will be a parent to the 2 new cells
+  // returns boolean - true if cell found, false otherwise.
   // 
   function formatData(cellTree, cellId, cellClassType) {
 
@@ -349,7 +352,6 @@ function App() {
         cellContent: currentContent,
       }
       ];
-      // console.log("after adding children current cellIdCount = " + cellIdCount);
       cellTree.cellContent = null;
       return true;
     } else {
@@ -364,6 +366,52 @@ function App() {
     }
   }
 
+  //
+  // Components
+  //
+
+  // LayoutCells - component for the layout panel
+  // Builds out the html objects for all of the cells in a cellTree
+  // Inputs:
+  // cellTree - an object containing all of the cells (nested binary tree)within a cell container
+  // returns the html structure for all of the cells within a cell container to be rendered
+
+  // Recursive code is based on the approach in this article:
+  // https://www.freecodecamp.org/news/how-to-use-recursion-in-react/
+  function LayoutCells({ cellTree }) {
+    let cellStyles = null;
+    if (cellTree.cellContent) {
+      // Fetch image content from image cells array
+      const matchingCell = imageCells.find(cell => cell.id === cellTree.cellContent);
+      const imgUrl = (matchingCell) ? matchingCell.imgUrl : "";
+      // set up image content
+      cellStyles = { backgroundImage: `url(${imgUrl})`, backgroundColor: 'orange' }
+    }
+    return (
+      <div key={cellTree.cellId} className={cellTree.classType}
+        onClick={cellTree.isClickable ? ((evt) => handleSplitCell(evt, cellTree.cellId)) : null}
+        draggable={cellTree.isClickable}
+        onDragStart={cellTree.isClickable ? ((evt) => handleDragStart(evt, cellTree.cellId, cellTree.cellContent)) : null}
+        onDragOver={cellTree.isClickable ? ((evt) => handleDragOver(evt)) : null}
+        onDragEnter={cellTree.isClickable ? ((evt) => handleDragEnter(evt)) : null}
+        onDragLeave={cellTree.isClickable ? ((evt) => handleDragLeave(evt)) : null}
+        onDrop={cellTree.isClickable ? ((evt) => handleDrop(evt, cellTree.cellId, cellTree.cellContent)) : null}
+        tabIndex={cellTree.isClickable ? "0" : null}
+        style={cellStyles}
+      >
+        {/* {cellTree.cellContent ? (<img src={cellTree.cellContent.imgUrl} alt={cellTree.cellContent.imgAlt}/>) : null } */}
+        {cellTree?.cellChildren?.map((child) => {
+          return (
+            <LayoutCells cellTree={child} />
+          );
+        }
+        )}
+      </div>
+    );
+  }
+
+
+  // App  
   return (
     <>
       <div className="editor">
@@ -416,8 +464,9 @@ function App() {
                   onDragStart={(e) => handleDragStart(e, cell.id, cell.id)}
                   onDragEnd={(e) => handleDragEnd(e)}
                   draggable
-                  aria-role="img"
+                  role="img"
                   aria-label={cell.imgAlt}
+                  tabIndex={0}
                   style={{ backgroundImage: `url(${cell.imgUrl})`, backgroundColor: 'orange' }}
                 ></div>
                 // ><img src={cell.imgUrl} alt={cell.imgAlt}/></div>
